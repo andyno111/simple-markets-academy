@@ -701,22 +701,19 @@ export default function App() {
 
       {/* Ambient glow orb */}
       <div style={{ position: 'absolute', width: 700, height: 700, borderRadius: '50%', background: 'radial-gradient(circle, rgba(0,201,167,0.05) 0%, transparent 65%)', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', animation: 'ldPulse 3.5s ease-in-out infinite', pointerEvents: 'none' }} />
-
-      {/* Logo card */}
+      {/* Logo */}
       <div style={{ animation: 'ldScale 0.65s cubic-bezier(0.34,1.56,0.64,1) both', marginBottom: 30 }}>
-        <div style={{ width: 96, height: 96, borderRadius: 24, background: 'linear-gradient(150deg, #1a3f72 0%, #0d2248 40%, #07162e 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden', animation: 'ldGlow 3s ease-in-out infinite' }}>
-          {/* Shimmer sweep */}
-          <div style={{ position: 'absolute', top: 0, bottom: 0, width: '55%', background: 'linear-gradient(110deg, transparent 0%, rgba(255,255,255,0.07) 50%, transparent 100%)', animation: 'ldShimmer 2.8s ease-in-out infinite' }} />
-          {/* SM geometric mark */}
-          <svg viewBox="0 0 58 52" width="56" height="50" fill="white" xmlns="http://www.w3.org/2000/svg" style={{ position: 'relative', zIndex: 1 }}>
-            {/* Left diagonal bar */}
-            <path d="M3,44 L11,8 C11.4,6.2 13,5.2 14.8,5.7 C16.6,6.2 17.5,7.9 17,9.7 L9,45.3 C8.6,47.1 7,48.1 5.2,47.6 C3.4,47.1 2.6,45.5 3,44Z" />
-            {/* Middle angular S-shape */}
-            <path d="M20,8 L33,8 C34.6,8 35.4,9.5 34.5,10.8 L28,26 L35,26 C36.8,26 37.6,27.8 36.5,29.2 L22,45 C21,46.4 19,46.5 18,45 L14,45 L28,29 L21,29 C19.2,29 18.4,27.2 19.3,25.8 Z" />
-            {/* Right M-shape */}
-            <path d="M37,45 L42,8 L48,8 L52,28 L56,8 L62,8 L57,45 L52,45 L50,30 L48,45 Z" />
-          </svg>
-        </div>
+        <img
+          src="/sma-logo.png"
+          alt="SMA Logo"
+          style={{
+            width: 120,
+            height: 120,
+            borderRadius: 24,
+            display: 'block',
+            animation: 'ldGlow 3s ease-in-out infinite',
+          }}
+        />
       </div>
 
       {/* Brand text */}
