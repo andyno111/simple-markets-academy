@@ -568,9 +568,9 @@ export default function App() {
   );
 
   const YrSelector = () => (
-    <div style={{ display: 'flex', gap: 2, background: theme.muted, border: `1px solid ${theme.border}`, borderRadius: 7, padding: 2 }}>
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 2, background: theme.muted, border: `1px solid ${theme.border}`, borderRadius: 7, padding: 2, maxWidth: isMobile ? 200 : 'none' }}>
       {[...compareYears, 'all', 'compare'].map(y => (
-        <YrBtn key={y} label={y === 'all' ? 'All' : y === 'compare' ? 'Compare ✦' : y} active={equityMode === y} onClick={() => setEquityMode(y)} />
+        <YrBtn key={y} label={y === 'all' ? 'All' : y === 'compare' ? (isMobile ? 'Cmp' : 'Compare ✦') : y} active={equityMode === y} onClick={() => setEquityMode(y)} />
       ))}
     </div>
   );
@@ -955,7 +955,7 @@ export default function App() {
           <p style={{ margin: '0 0 28px', fontSize: 14, color: theme.textDim, lineHeight: 1.75, maxWidth: 560 }}>
             Most traders fail at execution, not analysis. The system is built to remove the decisions that cause mistakes.
           </p>
-          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3,1fr)', gap: isMobile ? 10 : 14 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: isMobile ? 10 : 0, ...(isMobile ? {} : { display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 14 }) }}>
             {pillars.map((p, i) => {
               const pillarAccent = i === 0 ? theme.accent : i === 1 ? theme.purple : theme.amber;
               const pillarBg = i === 0
@@ -964,13 +964,20 @@ export default function App() {
                   ? (dark ? 'rgba(124,107,255,0.06)' : 'rgba(109,93,232,0.05)')
                   : (dark ? 'rgba(245,158,11,0.06)' : 'rgba(217,119,6,0.05)');
               return (
-                <div key={p.title} style={{ background: pillarBg, border: `1px solid ${pillarAccent}28`, borderRadius: 14, padding: '24px 22px', position: 'relative', overflow: 'hidden' }}>
-                  <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 4, background: pillarAccent, borderRadius: '14px 14px 0 0' }} />
-                  <div style={{ fontSize: 22, fontWeight: 800, color: pillarAccent, marginBottom: 8, marginTop: 6, opacity: 0.35, fontFamily: "'JetBrains Mono',monospace", lineHeight: 1 }}>
-                    {String(i + 1).padStart(2, '0')}
+                <div key={p.title} style={{ background: pillarBg, border: `1px solid ${pillarAccent}28`, borderRadius: 14, padding: isMobile ? '16px 16px' : '24px 22px', position: 'relative', overflow: 'hidden', width: '100%', boxSizing: 'border-box' }}>
+                  {isMobile
+                    ? <div style={{ position: 'absolute', top: 0, left: 0, bottom: 0, width: 4, background: pillarAccent, borderRadius: '14px 0 0 14px' }} />
+                    : <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 4, background: pillarAccent, borderRadius: '14px 14px 0 0' }} />
+                  }
+                  <div style={{ paddingLeft: isMobile ? 12 : 0 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+                      <span style={{ fontSize: isMobile ? 11 : 22, fontWeight: 800, color: pillarAccent, opacity: 0.45, fontFamily: "'JetBrains Mono',monospace", lineHeight: 1 }}>
+                        {String(i + 1).padStart(2, '0')}
+                      </span>
+                      <span style={{ fontSize: isMobile ? 13 : 14, fontWeight: 800, color: pillarAccent, lineHeight: 1.3 }}>{p.title}</span>
+                    </div>
+                    <div style={{ fontSize: isMobile ? 12 : 13, color: theme.textDim, lineHeight: 1.75 }}>{p.body}</div>
                   </div>
-                  <div style={{ fontSize: 14, fontWeight: 800, color: pillarAccent, marginBottom: 10, lineHeight: 1.3 }}>{p.title}</div>
-                  <div style={{ fontSize: 13, color: theme.textDim, lineHeight: 1.8 }}>{p.body}</div>
                 </div>
               );
             })}
@@ -2068,7 +2075,7 @@ export default function App() {
           {/* ── MOBILE HEADER ── */}
           {isMobile ? (
             <div style={{ position: 'sticky', top: 0, zIndex: 30, background: theme.nav, borderBottom: `1px solid ${theme.navBorder}`, padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 10 }}>
-              <img src="/sma-logo.png" alt="SMA" style={{ width: 32, height: 32, borderRadius: 8, flexShrink: 0 }} />
+              <img src="/sma-logo.png" alt="SMA" onClick={() => setPage('dashboard')} style={{ width: 32, height: 32, borderRadius: 8, flexShrink: 0, cursor: 'pointer' }} />
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ fontSize: 13, fontWeight: 700, color: '#fff', letterSpacing: -0.2, lineHeight: 1 }}>
                   {PAGES.find(p => p.id === page)?.l}
