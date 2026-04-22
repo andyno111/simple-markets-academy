@@ -901,7 +901,7 @@ export default function App() {
               )}
             </div>
             {/* Name + bio */}
-            <div style={{ flex: 1, minWidth: 240 }}>
+            <div style={{ flex: 1, minWidth: isMobile ? 0 : 240 }}>
               <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', color: theme.accent, marginBottom: 10, fontFamily: "'JetBrains Mono',monospace" }}>
                 Simple Markets Academy · Head Coach
               </div>
@@ -1106,7 +1106,7 @@ export default function App() {
       {(isAdmin || visibility.equity) && (() => {
         const tickInterval = Math.max(0, Math.floor(eq.length / 8) - 1);
         const chartBg = dark ? '#050c18' : theme.card;
-        const chartCard = { background: chartBg, border: `1px solid ${theme.border}`, borderRadius: 14, padding: '18px 20px 14px', boxShadow: dark ? '0 2px 24px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.03)' : '0 2px 12px rgba(0,0,0,0.07)' };
+        const chartCard = { background: chartBg, border: `1px solid ${theme.border}`, borderRadius: 14, padding: isMobile ? '14px 12px 10px' : '18px 20px 14px', boxShadow: dark ? '0 2px 24px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.03)' : '0 2px 12px rgba(0,0,0,0.07)', minWidth: 0, overflow: 'hidden' };
         const axisProps = { tick: { fontSize: 8, fill: theme.sub, fontFamily: "'JetBrains Mono',monospace" }, tickLine: false, axisLine: false };
         const eqInit = eq.length ? eq[0].bal : (selAcctData?.initialBalance ?? 25000);
         // Derive cumulative % from balance for each point
@@ -1162,8 +1162,8 @@ export default function App() {
                   <ResponsiveContainer width="100%" height={isMobile ? 200 : 380}>
                     <LineChart data={compareData} margin={{ top: 8, right: 4, bottom: isMobile ? 4 : 28, left: isMobile ? -10 : 4 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke={dark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.06)'} vertical={false} />
-                      <XAxis dataKey="trade" {...axisProps} label={{ value: 'Number of trades', position: 'insideBottom', offset: -12, fill: theme.accent, fontSize: 9, fontFamily: "'JetBrains Mono',monospace", letterSpacing: 1 }} tickFormatter={v => v === 0 ? '' : '#' + v} />
-                      <YAxis {...axisProps} tickFormatter={v => (v >= 0 ? '+' : '') + v + 'R'} width={36} />
+                      <XAxis dataKey="trade" {...axisProps} label={isMobile ? undefined : { value: 'Number of trades', position: 'insideBottom', offset: -12, fill: theme.accent, fontSize: 9, fontFamily: "'JetBrains Mono',monospace", letterSpacing: 1 }} tickFormatter={v => v === 0 ? '' : '#' + v} />
+                      <YAxis {...axisProps} tickFormatter={v => (v >= 0 ? '+' : '') + v + 'R'} width={isMobile ? 28 : 36} />
                       <Tooltip content={<MultiTip />} />
                       {compareYears.map((y, i) => <Line key={y} type="monotone" dataKey={y} stroke={YC[i % YC.length]} strokeWidth={2.5} dot={false} connectNulls />)}
                     </LineChart>
@@ -1181,10 +1181,10 @@ export default function App() {
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" stroke={dark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.06)'} vertical={false} />
                     <XAxis dataKey="n" {...axisProps} interval={tickInterval} tickFormatter={v => v === 0 ? '' : '#' + v}
-                      label={{ value: 'Number of trades', position: 'insideBottom', offset: -12, fill: theme.accent, fontSize: 9, fontFamily: "'JetBrains Mono',monospace", letterSpacing: 1 }} />
+                      label={isMobile ? undefined : { value: 'Number of trades', position: 'insideBottom', offset: -12, fill: theme.accent, fontSize: 9, fontFamily: "'JetBrains Mono',monospace", letterSpacing: 1 }} />
                     <YAxis {...axisProps}
                       tickFormatter={v => isPct ? (v >= 0 ? '+' : '') + v.toFixed(1) + '%' : (v >= 0 ? '+' : '') + v.toFixed(0) + 'R'}
-                      width={isPct ? 46 : 38}
+                      width={isMobile ? 32 : (isPct ? 46 : 38)}
                       domain={[
                         dataMin => Math.floor(Math.min(dataMin, 0) - Math.max(Math.abs(dataMin) * 0.22, 2)),
                         dataMax => Math.ceil(dataMax + Math.max(dataMax * 0.08, 1)),
@@ -2034,7 +2034,7 @@ export default function App() {
         /* ── MOBILE HEADER ── */
         .mob-header{display:flex;align-items:center;gap:10px;padding:14px 16px 10px;border-bottom:1px solid;}
       `}</style>
-      <div style={{ display: 'flex', minHeight: '100vh', background: theme.bg, color: theme.text, fontFamily: "'Outfit',sans-serif" }}>
+      <div style={{ display: 'flex', minHeight: '100vh', background: theme.bg, color: theme.text, fontFamily: "'Outfit',sans-serif", overflowX: 'hidden', maxWidth: '100vw' }}>
         {/* SIDEBAR — hidden on mobile */}
         <div style={{ width: 228, background: theme.nav, display: isMobile ? 'none' : 'flex', flexDirection: 'column', height: '100vh', position: 'fixed', left: 0, top: 0, flexShrink: 0, borderRight: `1px solid ${theme.navBorder}`, zIndex: 20, overflowY: 'auto' }}>
           <div style={{ padding: '22px 22px 18px', borderBottom: `1px solid ${theme.navBorder}` }}>
@@ -2063,7 +2063,7 @@ export default function App() {
         </div>
 
         {/* MAIN */}
-        <div style={{ flex: 1, minWidth: 0, padding: isMobile ? '0 0 80px' : '24px 28px 60px', marginLeft: isMobile ? 0 : 228 }}>
+        <div style={{ flex: 1, minWidth: 0, width: '100%', overflowX: 'hidden', padding: isMobile ? '0 0 80px' : '24px 28px 60px', marginLeft: isMobile ? 0 : 228 }}>
 
           {/* ── MOBILE HEADER ── */}
           {isMobile ? (
