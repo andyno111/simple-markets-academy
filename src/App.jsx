@@ -562,7 +562,7 @@ export default function App() {
   );
 
   const YrBtn = ({ label, active, onClick }) => (
-    <button onClick={onClick} style={{ padding: '4px 11px', borderRadius: 6, fontSize: 11.5, fontWeight: 600, cursor: 'pointer', color: active ? '#fff' : theme.sub, background: active ? theme.accent : 'transparent', border: 'none', fontFamily: "'Outfit',sans-serif", transition: 'all .12s' }}>
+    <button onClick={onClick} style={{ padding: isMobile ? '3px 7px' : '4px 11px', borderRadius: 6, fontSize: isMobile ? 10 : 11.5, fontWeight: 600, cursor: 'pointer', color: active ? '#fff' : theme.sub, background: active ? theme.accent : 'transparent', border: 'none', fontFamily: "'Outfit',sans-serif", transition: 'all .12s' }}>
       {label}
     </button>
   );
@@ -955,7 +955,7 @@ export default function App() {
           <p style={{ margin: '0 0 28px', fontSize: 14, color: theme.textDim, lineHeight: 1.75, maxWidth: 560 }}>
             Most traders fail at execution, not analysis. The system is built to remove the decisions that cause mistakes.
           </p>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 14 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3,1fr)', gap: isMobile ? 10 : 14 }}>
             {pillars.map((p, i) => {
               const pillarAccent = i === 0 ? theme.accent : i === 1 ? theme.purple : theme.amber;
               const pillarBg = i === 0
@@ -1115,7 +1115,7 @@ export default function App() {
         const livePoint = eqData[eqData.length - 1];
         const liveVal = isPct ? livePoint?.cumPct : livePoint?.cumR;
         return (
-          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '62fr 38fr', gap: 14, marginBottom: 18, alignItems: 'stretch' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '62fr 38fr', gap: 14, marginBottom: 18, alignItems: 'stretch', width: '100%', boxSizing: 'border-box', minWidth: 0 }}>
             {/* LEFT — Cumulative R / % (full-width, taller, stretched domain) */}
             <div style={chartCard}>
               <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', alignItems: isMobile ? 'flex-start' : 'center', gap: isMobile ? 10 : 8, marginBottom: 14 }}>
@@ -1159,8 +1159,8 @@ export default function App() {
                       </div>
                     ))}
                   </div>
-                  <ResponsiveContainer width="100%" height={isMobile ? 200 : 380}>
-                    <LineChart data={compareData} margin={{ top: 8, right: 4, bottom: isMobile ? 4 : 28, left: isMobile ? -10 : 4 }}>
+                  <ResponsiveContainer width="100%" height={isMobile ? 170 : 380}>
+                    <LineChart data={compareData} margin={{ top: 6, right: 4, bottom: isMobile ? 2 : 28, left: isMobile ? -14 : 4 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke={dark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.06)'} vertical={false} />
                       <XAxis dataKey="trade" {...axisProps} label={isMobile ? undefined : { value: 'Number of trades', position: 'insideBottom', offset: -12, fill: theme.accent, fontSize: 9, fontFamily: "'JetBrains Mono',monospace", letterSpacing: 1 }} tickFormatter={v => v === 0 ? '' : '#' + v} />
                       <YAxis {...axisProps} tickFormatter={v => (v >= 0 ? '+' : '') + v + 'R'} width={isMobile ? 28 : 36} />
@@ -1170,8 +1170,8 @@ export default function App() {
                   </ResponsiveContainer>
                 </>
               ) : (
-                <ResponsiveContainer width="100%" height={isMobile ? 200 : 380}>
-                  <AreaChart data={eqData} margin={{ top: 8, right: 4, bottom: isMobile ? 4 : 28, left: isMobile ? -10 : 4 }}>
+                <ResponsiveContainer width="100%" height={isMobile ? 170 : 380}>
+                  <AreaChart data={eqData} margin={{ top: 6, right: 4, bottom: isMobile ? 2 : 28, left: isMobile ? -14 : 4 }}>
                     <defs>
                       <linearGradient id="rrGrad" x1="0" y1="0" x2="0" y2="1">
                         <stop offset="0%" stopColor={theme.accent} stopOpacity={dark ? 0.32 : 0.22} />
@@ -1216,10 +1216,10 @@ export default function App() {
                     { l: 'Total trades', v: st.total, d: 'All time', c: theme.text },
                     { l: 'Expectancy', v: fmtR(st.exp), d: 'Per trade', c: st.exp >= 0 ? theme.gain : theme.loss },
                   ].map((m, i) => (
-                    <div key={m.l} style={{ padding: '8px 0', borderBottom: i < 9 ? `1px solid ${theme.border}33` : 'none' }}>
-                      <div style={{ fontSize: 9.5, color: theme.sub, marginBottom: 2 }}>{m.l}</div>
-                      <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
-                        <span style={{ fontSize: 15, fontWeight: 700, fontFamily: "'JetBrains Mono',monospace", color: m.c, lineHeight: 1 }}>{m.v}</span>
+                    <div key={m.l} style={{ padding: isMobile ? '6px 0' : '8px 0', borderBottom: i < 9 ? `1px solid ${theme.border}33` : 'none' }}>
+                      <div style={{ fontSize: 9, color: theme.sub, marginBottom: 1 }}>{m.l}</div>
+                      <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
+                        <span style={{ fontSize: isMobile ? 13 : 15, fontWeight: 700, fontFamily: "'JetBrains Mono',monospace", color: m.c, lineHeight: 1 }}>{m.v}</span>
                         <span style={{ fontSize: 9, color: theme.sub }}>{m.d}</span>
                       </div>
                     </div>
@@ -1421,7 +1421,7 @@ export default function App() {
       })()}
 
       {/* Triangle + Metrics */}
-      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '38fr 62fr', gap: 14, marginTop: 18 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '38fr 62fr', gap: 14, marginTop: 18, width: '100%', boxSizing: 'border-box', minWidth: 0 }}>
         {(isAdmin || visibility.triangle) && <div style={{ ...card, display: 'flex', flexDirection: 'column' }}>
           <SectionLabel accent>Edge Score</SectionLabel>
           <ResponsiveContainer width="100%" height={190}>
@@ -1589,21 +1589,21 @@ export default function App() {
         <div style={{ overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead><tr>{['Date', 'Symbol', 'Dir', 'Account', 'R', 'Profit $', 'Chart', ''].map(h => (
-              <th key={h} style={{ fontSize: 10, fontWeight: 700, letterSpacing: 1.2, textTransform: 'uppercase', color: theme.sub, padding: '9px 12px', textAlign: 'left', borderBottom: `1px solid ${theme.border}` }}>{h}</th>
+              <th key={h} style={{ fontSize: isMobile ? 9 : 10, fontWeight: 700, letterSpacing: 1.2, textTransform: 'uppercase', color: theme.sub, padding: isMobile ? '6px 8px' : '9px 12px', textAlign: 'left', borderBottom: `1px solid ${theme.border}`, whiteSpace: 'nowrap' }}>{h}</th>
             ))}</tr></thead>
             <tbody>
               {dispTrades.slice(0, 100).map(t => {
                 const a = accounts.find(x => x.id === t.account);
-                const tdS = { padding: '9px 12px', borderBottom: `1px solid ${theme.border}44` };
+                const tdS = { padding: isMobile ? '6px 8px' : '9px 12px', borderBottom: `1px solid ${theme.border}44` };
                 return (
                   <tr key={t.id}>
-                    <td style={{ ...tdS, fontSize: 11.5, fontFamily: "'JetBrains Mono',monospace" }}>{t.date}</td>
-                    <td style={{ ...tdS, fontSize: 13, fontWeight: 600 }}>{t.symbol}</td>
+                    <td style={{ ...tdS, fontSize: isMobile ? 10 : 11.5, fontFamily: "'JetBrains Mono',monospace" }}>{t.date}</td>
+                    <td style={{ ...tdS, fontSize: isMobile ? 11 : 13, fontWeight: 600 }}>{t.symbol}</td>
                     <td style={tdS}>
                       <DirBadge type={t.type} />
                     </td>
-                    <td style={{ ...tdS, fontSize: 11.5, color: theme.sub }}>{a?.name || '—'}</td>
-                    <td style={{ ...tdS, fontFamily: "'JetBrains Mono',monospace", fontSize: 13, fontWeight: 700, color: t.r > 0 ? theme.gain : t.r < 0 ? theme.loss : theme.sub }}>{fmtR(t.r)}</td>
+                    <td style={{ ...tdS, fontSize: isMobile ? 10 : 11.5, color: theme.sub }}>{a?.name || '—'}</td>
+                    <td style={{ ...tdS, fontFamily: "'JetBrains Mono',monospace", fontSize: isMobile ? 11 : 13, fontWeight: 700, color: t.r > 0 ? theme.gain : t.r < 0 ? theme.loss : theme.sub }}>{fmtR(t.r)}</td>
                     <td style={{ ...tdS, fontFamily: "'JetBrains Mono',monospace", fontSize: 12, fontWeight: 600, color: (() => { const ta = accounts.find(x => x.id === t.account); const rp = t.riskPercent != null ? t.riskPercent : (ta?.riskPercent ?? 1.0); const p = t.r * (rp / 100) * (ta?.initialBalance ?? 25000); return p > 0 ? theme.gain : p < 0 ? theme.loss : theme.sub; })() }}>
                       {(() => { const ta = accounts.find(x => x.id === t.account); const rp = t.riskPercent != null ? t.riskPercent : (ta?.riskPercent ?? 1.0); const p = t.r * (rp / 100) * (ta?.initialBalance ?? 25000); return (p >= 0 ? '+$' : '-$') + Math.abs(p).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }); })()}
                     </td>
@@ -2131,7 +2131,7 @@ export default function App() {
             </div>
           )}
 
-          <div key={page} className="page-enter" style={isMobile ? { padding: '16px 16px 0' } : {}}>
+          <div key={page} className="page-enter" style={isMobile ? { padding: '16px 16px 0', width: '100%', boxSizing: 'border-box', overflowX: 'hidden' } : {}}>
             {page === 'dashboard' && Dashboard()}
             {page === 'about' && About()}
             {page === 'trades' && Trades()}
