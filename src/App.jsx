@@ -562,13 +562,13 @@ export default function App() {
   );
 
   const YrBtn = ({ label, active, onClick }) => (
-    <button onClick={onClick} style={{ padding: isMobile ? '3px 7px' : '4px 11px', borderRadius: 6, fontSize: isMobile ? 10 : 11.5, fontWeight: 600, cursor: 'pointer', color: active ? '#fff' : theme.sub, background: active ? theme.accent : 'transparent', border: 'none', fontFamily: "'Outfit',sans-serif", transition: 'all .12s' }}>
+    <button onClick={onClick} style={{ padding: '4px 11px', borderRadius: 6, fontSize: 11.5, fontWeight: 600, cursor: 'pointer', color: active ? '#fff' : theme.sub, background: active ? theme.accent : 'transparent', border: 'none', fontFamily: "'Outfit',sans-serif", transition: 'all .12s' }}>
       {label}
     </button>
   );
 
   const YrSelector = () => (
-    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 2, background: theme.muted, border: `1px solid ${theme.border}`, borderRadius: 7, padding: 2, maxWidth: isMobile ? 200 : 'none' }}>
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 2, background: theme.muted, border: `1px solid ${theme.border}`, borderRadius: 7, padding: 2 }}>
       {[...compareYears, 'all', 'compare'].map(y => (
         <YrBtn key={y} label={y === 'all' ? 'All' : y === 'compare' ? (isMobile ? 'Cmp' : 'Compare ✦') : y} active={equityMode === y} onClick={() => setEquityMode(y)} />
       ))}
@@ -1005,16 +1005,16 @@ export default function App() {
 
         {/* ── CTA ── */}
         <div style={divider} />
-        <div className="about-section" style={{ animationDelay: '300ms', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 24, background: dark ? `linear-gradient(135deg, ${theme.card} 60%, rgba(0,201,167,0.06) 100%)` : theme.card, border: `1px solid ${theme.border}`, borderRadius: 16, padding: '32px 36px' }}>
-          <div style={{ flex: 1, minWidth: 240 }}>
+        <div className="about-section" style={{ animationDelay: '300ms', display: 'flex', alignItems: isMobile ? 'stretch' : 'center', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', gap: isMobile ? 20 : 24, background: dark ? `linear-gradient(135deg, ${theme.card} 60%, rgba(0,201,167,0.06) 100%)` : theme.card, border: `1px solid ${theme.border}`, borderRadius: 16, padding: isMobile ? '24px 20px' : '32px 36px' }}>
+          <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', color: theme.sub, marginBottom: 10, fontFamily: "'JetBrains Mono',monospace" }}>Get Started</div>
-            <h3 style={{ margin: '0 0 10px', fontSize: 20, fontWeight: 800, color: theme.text, letterSpacing: -0.3 }}>The full strategy is free.</h3>
-            <p style={{ margin: 0, fontSize: 14, color: theme.textDim, maxWidth: 380, lineHeight: 1.75 }}>
+            <h3 style={{ margin: '0 0 10px', fontSize: isMobile ? 17 : 20, fontWeight: 800, color: theme.text, letterSpacing: -0.3 }}>The full strategy is free.</h3>
+            <p style={{ margin: 0, fontSize: 13, color: theme.textDim, lineHeight: 1.75 }}>
               The entry rules, exit rules, position sizing — all of it. Download the guide and trade the exact same system tracked here.
             </p>
           </div>
-          <a href="#" style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '14px 28px', borderRadius: 12, background: theme.accent, color: '#fff', fontFamily: "'Outfit',sans-serif", fontSize: 14, fontWeight: 700, textDecoration: 'none', letterSpacing: 0.2, whiteSpace: 'nowrap', flexShrink: 0, boxShadow: `0 4px 20px ${theme.accent}33` }}>
-            ↓ Download the Simple Markets Strategy
+          <a href="#" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: isMobile ? '13px 20px' : '14px 28px', borderRadius: 12, background: theme.accent, color: '#fff', fontFamily: "'Outfit',sans-serif", fontSize: isMobile ? 13 : 14, fontWeight: 700, textDecoration: 'none', letterSpacing: 0.2, boxShadow: `0 4px 20px ${theme.accent}33`, alignSelf: isMobile ? 'center' : 'auto', width: isMobile ? '100%' : 'auto', boxSizing: 'border-box', textAlign: 'center' }}>
+            ↓ Download our strategy for free here
           </a>
         </div>
 
@@ -1277,12 +1277,13 @@ export default function App() {
                   const { x, y, width, height, value } = props;
                   if (value === undefined || value === null) return null;
                   const color = value >= 0 ? theme.gain : theme.loss;
-                  const label = (value >= 0 ? '+' : '') + value.toFixed(1) + 'R';
-                  // Positive bars: label floats above the bar. Negative bars: label sits just inside the top edge (zero crossing).
-                  const labelY = value >= 0 ? y - 7 : y + 15;
+                  const label = isMobile
+                    ? (value >= 0 ? '+' : '') + value.toFixed(0) + 'R'
+                    : (value >= 0 ? '+' : '') + value.toFixed(1) + 'R';
+                  const labelY = value >= 0 ? y - 5 : y + 13;
                   return (
                     <text x={x + width / 2} y={labelY} textAnchor="middle"
-                      style={{ fontSize: 11, fontFamily: "'JetBrains Mono',monospace", fill: color, fontWeight: 700 }}>
+                      style={{ fontSize: isMobile ? 7 : 11, fontFamily: "'JetBrains Mono',monospace", fill: color, fontWeight: 700 }}>
                       {label}
                     </text>
                   );
@@ -2075,7 +2076,9 @@ export default function App() {
           {/* ── MOBILE HEADER ── */}
           {isMobile ? (
             <div style={{ position: 'sticky', top: 0, zIndex: 30, background: theme.nav, borderBottom: `1px solid ${theme.navBorder}`, padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 10 }}>
-              <img src="/sma-logo.png" alt="SMA" onClick={() => setPage('dashboard')} style={{ width: 32, height: 32, borderRadius: 8, flexShrink: 0, cursor: 'pointer' }} />
+              <button onClick={() => setPage('dashboard')} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', flexShrink: 0, display: 'flex', WebkitTapHighlightColor: 'transparent' }}>
+                <img src="/sma-logo.png" alt="SMA" style={{ width: 32, height: 32, borderRadius: 8, display: 'block' }} />
+              </button>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ fontSize: 13, fontWeight: 700, color: '#fff', letterSpacing: -0.2, lineHeight: 1 }}>
                   {PAGES.find(p => p.id === page)?.l}
