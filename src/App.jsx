@@ -275,6 +275,13 @@ export default function App() {
   const [dailyMode, setDailyMode] = useState('daily'); // 'daily' or 'weekly'
   const [equityDispMode, setEquityDispMode] = useState('R'); // 'R' or '%'
   const [aboutImgError, setAboutImgError] = useState(false);
+  const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 768);
+
+  useEffect(() => {
+    const handler = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handler);
+    return () => window.removeEventListener('resize', handler);
+  }, []);
 
   const theme = useMemo(() => T(dark), [dark] /* theme object — see T() above */);
 
@@ -783,7 +790,7 @@ export default function App() {
   const LogPanel = () => (
     <>
       <div onClick={() => setLogPanelOpen(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,.5)', zIndex: 100, backdropFilter: 'blur(3px)' }} />
-      <div style={{ position: 'fixed', right: 0, top: 0, bottom: 0, width: 400, background: theme.card, borderLeft: `1px solid ${theme.border}`, zIndex: 101, padding: 26, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <div style={{ position: 'fixed', right: 0, top: 0, bottom: 0, width: isMobile ? '100%' : 400, background: theme.card, borderLeft: isMobile ? 'none' : `1px solid ${theme.border}`, zIndex: 101, padding: isMobile ? '20px 20px 40px' : 26, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 16 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div style={{ fontSize: 17, fontWeight: 700 }}>Log Trade</div>
           <button style={{ ...btnG, padding: '3px 9px' }} onClick={() => setLogPanelOpen(false)}>✕</button>
@@ -877,7 +884,7 @@ export default function App() {
 
         {/* ── HERO ── */}
         <div className="about-section" style={{ paddingBottom: 44, borderBottom: `1px solid ${theme.border}`, animationDelay: '0ms' }}>
-          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 32, flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', alignItems: isMobile ? 'center' : 'flex-start', flexDirection: isMobile ? 'column' : 'row', gap: isMobile ? 20 : 32, flexWrap: 'wrap', textAlign: isMobile ? 'center' : 'left' }}>
             {/* Circular photo */}
             <div style={{ flexShrink: 0, paddingTop: 4 }}>
               {!imgError ? (
@@ -1012,7 +1019,7 @@ export default function App() {
   const Dashboard = () => (
     <>
       {/* KPI strip */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6,1fr)', gap: 10, marginBottom: 18 }}>
+      <div className={isMobile ? 'mob-kpi-row' : ''} style={isMobile ? { marginBottom: 16, marginLeft: -16, marginRight: -16, paddingLeft: 16, paddingRight: 16 } : { display: 'grid', gridTemplateColumns: 'repeat(6,1fr)', gap: 10, marginBottom: 18 }}>
         {[
           {
             l: 'Net P&L', vis: 'pnl', noYr: false,
@@ -1108,7 +1115,7 @@ export default function App() {
         const livePoint = eqData[eqData.length - 1];
         const liveVal = isPct ? livePoint?.cumPct : livePoint?.cumR;
         return (
-          <div style={{ display: 'grid', gridTemplateColumns: '62fr 38fr', gap: 14, marginBottom: 18, alignItems: 'stretch' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '62fr 38fr', gap: 14, marginBottom: 18, alignItems: 'stretch' }}>
             {/* LEFT — Cumulative R / % (full-width, taller, stretched domain) */}
             <div style={chartCard}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
@@ -1150,7 +1157,7 @@ export default function App() {
                       </div>
                     ))}
                   </div>
-                  <ResponsiveContainer width="100%" height={380}>
+                  <ResponsiveContainer width="100%" height={isMobile ? 240 : 380}>
                     <LineChart data={compareData} margin={{ top: 8, right: 8, bottom: 28, left: 4 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke={dark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.06)'} vertical={false} />
                       <XAxis dataKey="trade" {...axisProps} label={{ value: 'Number of trades', position: 'insideBottom', offset: -12, fill: theme.accent, fontSize: 9, fontFamily: "'JetBrains Mono',monospace", letterSpacing: 1 }} tickFormatter={v => v === 0 ? '' : '#' + v} />
@@ -1161,7 +1168,7 @@ export default function App() {
                   </ResponsiveContainer>
                 </>
               ) : (
-                <ResponsiveContainer width="100%" height={380}>
+                <ResponsiveContainer width="100%" height={isMobile ? 240 : 380}>
                   <AreaChart data={eqData} margin={{ top: 8, right: 8, bottom: 28, left: 4 }}>
                     <defs>
                       <linearGradient id="rrGrad" x1="0" y1="0" x2="0" y2="1">
@@ -1223,7 +1230,7 @@ export default function App() {
       })()}
 
       {/* Monthly + Donut */}
-      <div style={{ display: 'grid', gridTemplateColumns: '58fr 42fr', gap: 14, marginBottom: 18 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '58fr 42fr', gap: 14, marginBottom: 18 }}>
         <div style={card}>
           {/* Header row: label + year nav + month filter badge */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12, flexWrap: 'wrap' }}>
@@ -1333,7 +1340,7 @@ export default function App() {
                 Performance Analysis
               </div>
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 14 }}>
               {/* LEFT — Risk-Adjusted Ratios */}
               <div style={cCard}>
                 <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, textTransform: 'uppercase', color: theme.textDim, marginBottom: 16 }}>
@@ -1412,7 +1419,7 @@ export default function App() {
       })()}
 
       {/* Triangle + Metrics */}
-      <div style={{ display: 'grid', gridTemplateColumns: '38fr 62fr', gap: 14, marginTop: 18 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '38fr 62fr', gap: 14, marginTop: 18 }}>
         {(isAdmin || visibility.triangle) && <div style={{ ...card, display: 'flex', flexDirection: 'column' }}>
           <SectionLabel accent>Edge Score</SectionLabel>
           <ResponsiveContainer width="100%" height={190}>
@@ -1467,42 +1474,81 @@ export default function App() {
                   Full log →
                 </button>
               </div>
-              {/* Scrollable table capped to Edge Score height */}
+              {/* Scrollable table — desktop | card list — mobile */}
               <div style={{ overflowY: 'auto', flex: 1 }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                  <thead style={{ position: 'sticky', top: 0, zIndex: 2 }}>
-                    <tr style={{ background: theme.muted }}>
-                      {['Date', 'Symbol', 'Dir', 'R', 'Profit $', ''].map(h => (
-                        <th key={h} style={{ fontSize: 9, fontWeight: 700, letterSpacing: 1.6, textTransform: 'uppercase', color: theme.sub, padding: '8px 12px', textAlign: 'left', borderBottom: `1px solid ${theme.border}`, whiteSpace: 'nowrap' }}>{h}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
+                {isMobile ? (
+                  <div style={{ display: 'flex', flexDirection: 'column' }}>
                     {capTrades.map((t, idx) => {
                       const ta = accounts.find(x => x.id === t.account);
                       const rp = t.riskPercent != null ? t.riskPercent : (ta?.riskPercent ?? 1.0);
                       const profit = t.r * (rp / 100) * (ta?.initialBalance ?? 25000);
                       return (
-                        <tr key={t.id} style={{ background: idx % 2 === 0 ? 'transparent' : dark ? 'rgba(255,255,255,0.012)' : 'rgba(0,0,0,0.012)' }}>
-                          <td style={{ padding: '8px 12px', fontSize: 11, fontFamily: "'JetBrains Mono',monospace", color: theme.textDim, borderBottom: `1px solid ${theme.borderFaint}`, whiteSpace: 'nowrap' }}>{t.date}</td>
-                          <td style={{ padding: '8px 12px', fontSize: 12.5, fontWeight: 700, letterSpacing: 0.4, borderBottom: `1px solid ${theme.borderFaint}` }}>{t.symbol}</td>
-                          <td style={{ padding: '8px 12px', borderBottom: `1px solid ${theme.borderFaint}` }}><DirBadge type={t.type} /></td>
-                          <td style={{ padding: '8px 12px', fontFamily: "'JetBrains Mono',monospace", fontSize: 13, fontWeight: 700, color: t.r > 0 ? theme.gain : t.r < 0 ? theme.loss : theme.sub, borderBottom: `1px solid ${theme.borderFaint}` }}>{fmtR(t.r)}</td>
-                          <td style={{ padding: '8px 12px', fontFamily: "'JetBrains Mono',monospace", fontSize: 11.5, fontWeight: 600, color: profit > 0 ? theme.gain : profit < 0 ? theme.loss : theme.sub, borderBottom: `1px solid ${theme.borderFaint}`, whiteSpace: 'nowrap' }}>
-                            {(profit >= 0 ? '+$' : '-$') + Math.abs(profit).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
-                          </td>
-                          <td style={{ padding: '8px 12px', borderBottom: `1px solid ${theme.borderFaint}` }}>
-                            {t.chartLink ? <a href={t.chartLink} target="_blank" rel="noreferrer" style={{ color: theme.accent, fontSize: 11, fontWeight: 600, textDecoration: 'none' }}>📊</a> : <span style={{ color: theme.border, fontSize: 12 }}>—</span>}
-                          </td>
-                        </tr>
+                        <div key={t.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '11px 16px', borderBottom: `1px solid ${theme.borderFaint}`, background: idx % 2 === 0 ? 'transparent' : dark ? 'rgba(255,255,255,0.012)' : 'rgba(0,0,0,0.012)' }}>
+                          {/* Color strip */}
+                          <div style={{ width: 3, height: 36, borderRadius: 2, flexShrink: 0, background: t.r > 0 ? theme.gain : t.r < 0 ? theme.loss : theme.sub }} />
+                          {/* Symbol + date */}
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2 }}>
+                              <span style={{ fontSize: 13, fontWeight: 700, letterSpacing: 0.4 }}>{t.symbol}</span>
+                              <DirBadge type={t.type} />
+                            </div>
+                            <div style={{ fontSize: 10, fontFamily: "'JetBrains Mono',monospace", color: theme.sub }}>{t.date}</div>
+                          </div>
+                          {/* R + profit */}
+                          <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                            <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 14, fontWeight: 700, color: t.r > 0 ? theme.gain : t.r < 0 ? theme.loss : theme.sub, lineHeight: 1 }}>{fmtR(t.r)}</div>
+                            <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 10.5, color: profit >= 0 ? theme.gain : theme.loss, marginTop: 3 }}>
+                              {(profit >= 0 ? '+$' : '-$') + Math.abs(profit).toLocaleString('en-US', { maximumFractionDigits: 0 })}
+                            </div>
+                          </div>
+                          {t.chartLink && <a href={t.chartLink} target="_blank" rel="noreferrer" style={{ color: theme.accent, fontSize: 14, textDecoration: 'none', flexShrink: 0 }}>📊</a>}
+                        </div>
                       );
                     })}
-                  </tbody>
-                </table>
-                {capTrades.length === 0 && (
-                  <div style={{ padding: '36px 0', textAlign: 'center', color: theme.sub, fontSize: 13 }}>
-                    {dashMonthFilter ? 'No trades this month.' : 'No trades yet.'}
+                    {capTrades.length === 0 && (
+                      <div style={{ padding: '36px 0', textAlign: 'center', color: theme.sub, fontSize: 13 }}>
+                        {dashMonthFilter ? 'No trades this month.' : 'No trades yet.'}
+                      </div>
+                    )}
                   </div>
+                ) : (
+                  <>
+                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                      <thead style={{ position: 'sticky', top: 0, zIndex: 2 }}>
+                        <tr style={{ background: theme.muted }}>
+                          {['Date', 'Symbol', 'Dir', 'R', 'Profit $', ''].map(h => (
+                            <th key={h} style={{ fontSize: 9, fontWeight: 700, letterSpacing: 1.6, textTransform: 'uppercase', color: theme.sub, padding: '8px 12px', textAlign: 'left', borderBottom: `1px solid ${theme.border}`, whiteSpace: 'nowrap' }}>{h}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {capTrades.map((t, idx) => {
+                          const ta = accounts.find(x => x.id === t.account);
+                          const rp = t.riskPercent != null ? t.riskPercent : (ta?.riskPercent ?? 1.0);
+                          const profit = t.r * (rp / 100) * (ta?.initialBalance ?? 25000);
+                          return (
+                            <tr key={t.id} className="trade-row" style={{ background: idx % 2 === 0 ? 'transparent' : dark ? 'rgba(255,255,255,0.012)' : 'rgba(0,0,0,0.012)' }}>
+                              <td style={{ padding: '8px 12px', fontSize: 11, fontFamily: "'JetBrains Mono',monospace", color: theme.textDim, borderBottom: `1px solid ${theme.borderFaint}`, whiteSpace: 'nowrap' }}>{t.date}</td>
+                              <td style={{ padding: '8px 12px', fontSize: 12.5, fontWeight: 700, letterSpacing: 0.4, borderBottom: `1px solid ${theme.borderFaint}` }}>{t.symbol}</td>
+                              <td style={{ padding: '8px 12px', borderBottom: `1px solid ${theme.borderFaint}` }}><DirBadge type={t.type} /></td>
+                              <td style={{ padding: '8px 12px', fontFamily: "'JetBrains Mono',monospace", fontSize: 13, fontWeight: 700, color: t.r > 0 ? theme.gain : t.r < 0 ? theme.loss : theme.sub, borderBottom: `1px solid ${theme.borderFaint}` }}>{fmtR(t.r)}</td>
+                              <td style={{ padding: '8px 12px', fontFamily: "'JetBrains Mono',monospace", fontSize: 11.5, fontWeight: 600, color: profit > 0 ? theme.gain : profit < 0 ? theme.loss : theme.sub, borderBottom: `1px solid ${theme.borderFaint}`, whiteSpace: 'nowrap' }}>
+                                {(profit >= 0 ? '+$' : '-$') + Math.abs(profit).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                              </td>
+                              <td style={{ padding: '8px 12px', borderBottom: `1px solid ${theme.borderFaint}` }}>
+                                {t.chartLink ? <a href={t.chartLink} target="_blank" rel="noreferrer" style={{ color: theme.accent, fontSize: 11, fontWeight: 600, textDecoration: 'none' }}>📊</a> : <span style={{ color: theme.border, fontSize: 12 }}>—</span>}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                    {capTrades.length === 0 && (
+                      <div style={{ padding: '36px 0', textAlign: 'center', color: theme.sub, fontSize: 13 }}>
+                        {dashMonthFilter ? 'No trades this month.' : 'No trades yet.'}
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
               {/* Footer */}
@@ -1974,10 +2020,23 @@ export default function App() {
           .kpi-card,.page-enter,.modal-panel,.about-section{animation:none!important;}
           *{transition-duration:.01ms!important;}
         }
+
+        /* ── MOBILE KPI SCROLL ── */
+        .mob-kpi-row{display:flex;overflow-x:auto;gap:10px;padding:0 16px 8px;scrollbar-width:none;-webkit-overflow-scrolling:touch;}
+        .mob-kpi-row::-webkit-scrollbar{display:none;}
+        .mob-kpi-row .kpi-card{min-width:150px;max-width:165px;flex-shrink:0;}
+
+        /* ── MOBILE BOTTOM NAV ── */
+        .mob-nav{position:fixed;bottom:0;left:0;right:0;z-index:50;display:flex;align-items:stretch;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);}
+        .mob-nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:10px 4px 12px;cursor:pointer;border:none;background:transparent;font-family:'Outfit',sans-serif;transition:opacity .15s;}
+        .mob-nav-item:active{opacity:.6;}
+
+        /* ── MOBILE HEADER ── */
+        .mob-header{display:flex;align-items:center;gap:10px;padding:14px 16px 10px;border-bottom:1px solid;}
       `}</style>
       <div style={{ display: 'flex', minHeight: '100vh', background: theme.bg, color: theme.text, fontFamily: "'Outfit',sans-serif" }}>
-        {/* SIDEBAR */}
-        <div style={{ width: 228, background: theme.nav, display: 'flex', flexDirection: 'column', height: '100vh', position: 'fixed', left: 0, top: 0, flexShrink: 0, borderRight: `1px solid ${theme.navBorder}`, zIndex: 20, overflowY: 'auto' }}>
+        {/* SIDEBAR — hidden on mobile */}
+        <div style={{ width: 228, background: theme.nav, display: isMobile ? 'none' : 'flex', flexDirection: 'column', height: '100vh', position: 'fixed', left: 0, top: 0, flexShrink: 0, borderRight: `1px solid ${theme.navBorder}`, zIndex: 20, overflowY: 'auto' }}>
           <div style={{ padding: '22px 22px 18px', borderBottom: `1px solid ${theme.navBorder}` }}>
             <div style={{ fontSize: 9.5, letterSpacing: 2.5, textTransform: 'uppercase', color: theme.accent, marginBottom: 5, fontWeight: 600 }}>Simple Markets</div>
             <div style={{ fontSize: 14, fontWeight: 700, color: '#fff', lineHeight: 1.35, letterSpacing: -0.2 }}>Andrej's<br />Performance Record</div>
@@ -2004,35 +2063,75 @@ export default function App() {
         </div>
 
         {/* MAIN */}
-        <div style={{ flex: 1, minWidth: 0, padding: '24px 28px 60px', marginLeft: 228 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 22, flexWrap: 'wrap' }}>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 20, fontWeight: 700 }}>{PAGES.find(p => p.id === page)?.l}</div>
-              <div style={{ fontSize: 11, color: theme.sub, marginTop: 1 }}>Last updated {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</div>
+        <div style={{ flex: 1, minWidth: 0, padding: isMobile ? '0 0 80px' : '24px 28px 60px', marginLeft: isMobile ? 0 : 228 }}>
+
+          {/* ── MOBILE HEADER ── */}
+          {isMobile ? (
+            <div style={{ position: 'sticky', top: 0, zIndex: 30, background: theme.nav, borderBottom: `1px solid ${theme.navBorder}`, padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 10 }}>
+              <img src="/sma-logo.png" alt="SMA" style={{ width: 32, height: 32, borderRadius: 8, flexShrink: 0 }} />
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontSize: 13, fontWeight: 700, color: '#fff', letterSpacing: -0.2, lineHeight: 1 }}>
+                  {PAGES.find(p => p.id === page)?.l}
+                </div>
+                <div style={{ fontSize: 10, color: theme.navText, marginTop: 2 }}>Simple Markets Academy</div>
+              </div>
+              <select style={{ padding: '6px 8px', borderRadius: 8, border: `1px solid ${theme.navBorder}`, background: 'rgba(255,255,255,0.05)', color: '#fff', fontFamily: "'Outfit',sans-serif", fontSize: 12, outline: 'none', maxWidth: 110 }} value={selectedAccount} onChange={e => setSelectedAccount(e.target.value)}>
+                <option value="all">All accts</option>
+                {accounts.map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
+              </select>
+              <button onClick={() => setDark(p => !p)} style={{ width: 32, height: 32, borderRadius: 8, border: `1px solid ${theme.navBorder}`, background: 'rgba(255,255,255,0.05)', cursor: 'pointer', fontSize: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                {dark ? '☀️' : '🌙'}
+              </button>
+              {isAdmin && page !== 'settings' && (
+                <button style={{ ...btnP, padding: '6px 12px', fontSize: 12, flexShrink: 0 }} onClick={() => setLogPanelOpen(true)}>+ Log</button>
+              )}
             </div>
-            {['dashboard', 'trades'].includes(page) && (
-              <div style={{ display: 'flex', gap: 2, background: theme.muted, border: `1px solid ${theme.border}`, borderRadius: 8, padding: 3 }}>
+          ) : (
+            /* ── DESKTOP HEADER ── */
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 22, flexWrap: 'wrap' }}>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 20, fontWeight: 700 }}>{PAGES.find(p => p.id === page)?.l}</div>
+                <div style={{ fontSize: 11, color: theme.sub, marginTop: 1 }}>Last updated {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</div>
+              </div>
+              {['dashboard', 'trades'].includes(page) && (
+                <div style={{ display: 'flex', gap: 2, background: theme.muted, border: `1px solid ${theme.border}`, borderRadius: 8, padding: 3 }}>
+                  {['1W', '1M', '3M', 'YTD', 'ALL'].map(p => (
+                    <button key={p} onClick={() => setPeriod(p)} style={{ padding: '4px 11px', borderRadius: 6, fontSize: 11.5, fontWeight: 600, cursor: 'pointer', color: period === p ? '#fff' : theme.sub, background: period === p ? theme.accent : 'transparent', border: 'none', fontFamily: "'Outfit',sans-serif", transition: 'all .12s' }}>{p}</button>
+                  ))}
+                </div>
+              )}
+              <select style={{ padding: '7px 12px', borderRadius: 8, border: `1px solid ${theme.border}`, background: theme.card, color: theme.text, fontFamily: "'Outfit',sans-serif", fontSize: 13, outline: 'none' }} value={selectedAccount} onChange={e => setSelectedAccount(e.target.value)}>
+                <option value="all">All accounts</option>
+                {accounts.map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
+              </select>
+              {['dashboard', 'trades'].includes(page) && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 7, fontSize: 12, color: theme.sub }}>
+                  <span>BE=Win</span><Tog on={breakEvenAsWin} fn={() => setBreakEvenAsWin(p => !p)} />
+                </div>
+              )}
+              {isAdmin && page !== 'settings' && <button style={btnP} onClick={() => setLogPanelOpen(true)}>+ Log Trade</button>}
+              <button onClick={() => setDark(p => !p)} style={{ width: 34, height: 34, borderRadius: 8, border: `1px solid ${theme.border}`, background: theme.card, cursor: 'pointer', fontSize: 15, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                {dark ? '☀️' : '🌙'}
+              </button>
+            </div>
+          )}
+
+          {/* Mobile period + BE filter bar */}
+          {isMobile && ['dashboard', 'trades'].includes(page) && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 16px', borderBottom: `1px solid ${theme.border}`, background: theme.card, overflowX: 'auto', scrollbarWidth: 'none' }}>
+              <div style={{ display: 'flex', gap: 2, background: theme.muted, border: `1px solid ${theme.border}`, borderRadius: 8, padding: 3, flexShrink: 0 }}>
                 {['1W', '1M', '3M', 'YTD', 'ALL'].map(p => (
-                  <button key={p} onClick={() => setPeriod(p)} style={{ padding: '4px 11px', borderRadius: 6, fontSize: 11.5, fontWeight: 600, cursor: 'pointer', color: period === p ? '#fff' : theme.sub, background: period === p ? theme.accent : 'transparent', border: 'none', fontFamily: "'Outfit',sans-serif", transition: 'all .12s' }}>{p}</button>
+                  <button key={p} onClick={() => setPeriod(p)} style={{ padding: '4px 10px', borderRadius: 6, fontSize: 11, fontWeight: 600, cursor: 'pointer', color: period === p ? '#fff' : theme.sub, background: period === p ? theme.accent : 'transparent', border: 'none', fontFamily: "'Outfit',sans-serif", transition: 'all .12s' }}>{p}</button>
                 ))}
               </div>
-            )}
-            <select style={{ padding: '7px 12px', borderRadius: 8, border: `1px solid ${theme.border}`, background: theme.card, color: theme.text, fontFamily: "'Outfit',sans-serif", fontSize: 13, outline: 'none' }} value={selectedAccount} onChange={e => setSelectedAccount(e.target.value)}>
-              <option value="all">All accounts</option>
-              {accounts.map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
-            </select>
-            {['dashboard', 'trades'].includes(page) && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: 7, fontSize: 12, color: theme.sub }}>
-                <span>BE=Win</span><Tog on={breakEvenAsWin} fn={() => setBreakEvenAsWin(p => !p)} />
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, color: theme.sub, flexShrink: 0 }}>
+                <span style={{ whiteSpace: 'nowrap' }}>BE=Win</span>
+                <Tog on={breakEvenAsWin} fn={() => setBreakEvenAsWin(p => !p)} />
               </div>
-            )}
-            {isAdmin && page !== 'settings' && <button style={btnP} onClick={() => setLogPanelOpen(true)}>+ Log Trade</button>}
-            <button onClick={() => setDark(p => !p)} style={{ width: 34, height: 34, borderRadius: 8, border: `1px solid ${theme.border}`, background: theme.card, cursor: 'pointer', fontSize: 15, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              {dark ? '☀️' : '🌙'}
-            </button>
-          </div>
+            </div>
+          )}
 
-          <div key={page} className="page-enter">
+          <div key={page} className="page-enter" style={isMobile ? { padding: '16px 16px 0' } : {}}>
             {page === 'dashboard' && Dashboard()}
             {page === 'about' && About()}
             {page === 'trades' && Trades()}
@@ -2041,6 +2140,31 @@ export default function App() {
             {page === 'settings' && Settings()}
           </div>
         </div>
+
+        {/* ── MOBILE BOTTOM NAV ── */}
+        {isMobile && (
+          <nav className="mob-nav" style={{ background: theme.nav, borderTop: `1px solid ${theme.navBorder}` }}>
+            {PAGES.map(p => {
+              const icons = { dashboard: '▦', about: '◈', trades: '≡', calendar: '◫', accounts: '◎', settings: '⚙' };
+              const labels = { dashboard: 'Dashboard', about: 'About', trades: 'Trades', calendar: 'Calendar', accounts: 'Accounts', settings: 'Settings' };
+              const active = page === p.id;
+              return (
+                <button
+                  key={p.id}
+                  className="mob-nav-item"
+                  onClick={() => setPage(p.id)}
+                  style={{ color: active ? theme.accent : theme.navText, position: 'relative' }}
+                >
+                  <span style={{ fontSize: 18, lineHeight: 1 }}>{icons[p.id]}</span>
+                  <span style={{ fontSize: 9, fontWeight: active ? 700 : 400, letterSpacing: 0.3, textTransform: 'uppercase' }}>{labels[p.id]}</span>
+                  {active && (
+                    <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', width: 28, height: 2, borderRadius: 2, background: theme.accent }} />
+                  )}
+                </button>
+              );
+            })}
+          </nav>
+        )}
       </div>
       {logPanelOpen && LogPanel()}
       {showAdminModal && AdminModal()}
