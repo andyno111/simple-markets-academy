@@ -1019,7 +1019,7 @@ export default function App() {
   const Dashboard = () => (
     <>
       {/* KPI strip */}
-      <div className={isMobile ? 'mob-kpi-row' : ''} style={isMobile ? { marginBottom: 16, marginLeft: -16, marginRight: -16, paddingLeft: 16, paddingRight: 16 } : { display: 'grid', gridTemplateColumns: 'repeat(6,1fr)', gap: 10, marginBottom: 18 }}>
+      <div style={isMobile ? { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 16 } : { display: 'grid', gridTemplateColumns: 'repeat(6,1fr)', gap: 10, marginBottom: 18 }}>
         {[
           {
             l: 'Net P&L', vis: 'pnl', noYr: false,
@@ -1074,8 +1074,8 @@ export default function App() {
               ].indexOf(k.l)) * 55) + 'ms'
             }}>
               <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 40, background: `linear-gradient(180deg, ${topColor}0a 0%, transparent 100%)`, pointerEvents: 'none' }} />
-              {/* Per-card year buttons — hidden for Profit Factor & Expectancy */}
-              {!k.noYr && kpiYears.length > 0 && (
+              {/* Per-card year buttons — hidden for Profit Factor & Expectancy & mobile */}
+              {!k.noYr && kpiYears.length > 0 && !isMobile && (
                 <div style={{ display: 'flex', gap: 3, marginBottom: 9, flexWrap: 'wrap' }}>
                   {['all', ...kpiYears].map(y => (
                     <button key={y} onClick={() => setCardYears(p => ({ ...p, [k.l]: y }))}
@@ -1095,8 +1095,8 @@ export default function App() {
                 )}
               </div>
               {/* Animated value — key change triggers fade-in on year switch */}
-              <div key={cy + v + totalRMode} style={{ fontSize: 20, fontWeight: 700, fontFamily: "'JetBrains Mono',monospace", lineHeight: 1, color: topColor, marginBottom: 6, animation: 'numFade 0.28s ease both' }}>{v}</div>
-              <div style={{ fontSize: 10.5, color: theme.sub }}>{k.getS(cSt)}</div>
+              <div key={cy + v + totalRMode} style={{ fontSize: isMobile ? 15 : 20, fontWeight: 700, fontFamily: "'JetBrains Mono',monospace", lineHeight: 1, color: topColor, marginBottom: 4, animation: 'numFade 0.28s ease both' }}>{v}</div>
+              <div style={{ fontSize: 10, color: theme.sub }}>{k.getS(cSt)}</div>
             </div>
           );
         })}
@@ -1118,34 +1118,36 @@ export default function App() {
           <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '62fr 38fr', gap: 14, marginBottom: 18, alignItems: 'stretch' }}>
             {/* LEFT — Cumulative R / % (full-width, taller, stretched domain) */}
             <div style={chartCard}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
+              <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', alignItems: isMobile ? 'flex-start' : 'center', gap: isMobile ? 10 : 8, marginBottom: 14 }}>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: 2.5, textTransform: 'uppercase', color: theme.sub }}>
                     {equityMode === 'compare' ? 'R — Year Comparison' : equityMode !== 'all' ? `Cumulative ${isPct ? '%' : 'R'} — ${equityMode}` : `Cumulative ${isPct ? '%' : 'R'} — All Time`}
                   </div>
                   {equityMode !== 'compare' && eqData.length > 1 && (
-                    <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 22, fontWeight: 700, color: (liveVal ?? 0) >= 0 ? theme.gain : theme.loss, lineHeight: 1, marginTop: 4 }}>
+                    <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: isMobile ? 18 : 22, fontWeight: 700, color: (liveVal ?? 0) >= 0 ? theme.gain : theme.loss, lineHeight: 1, marginTop: 4 }}>
                       {(liveVal ?? 0) >= 0 ? '+' : ''}{liveVal?.toFixed(2)}{isPct ? '%' : 'R'}
                     </div>
                   )}
                 </div>
-                {/* R / % toggle */}
-                {equityMode !== 'compare' && (
-                  <div style={{ display: 'flex', gap: 2, background: theme.muted, borderRadius: 8, padding: 3 }}>
-                    {['R', '%'].map(m => (
-                      <button key={m} onClick={() => setEquityDispMode(m)}
-                        style={{
-                          fontSize: 11, fontWeight: 700, padding: '4px 11px', borderRadius: 6, border: 'none', cursor: 'pointer', fontFamily: "'JetBrains Mono',monospace", transition: 'all .15s ease',
-                          background: equityDispMode === m ? theme.accent : 'transparent',
-                          color: equityDispMode === m ? (dark ? '#000' : '#fff') : theme.sub,
-                          boxShadow: equityDispMode === m ? `0 1px 6px ${theme.accent}50` : 'none',
-                        }}>
-                        {m}
-                      </button>
-                    ))}
-                  </div>
-                )}
-                <YrSelector />
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                  {/* R / % toggle */}
+                  {equityMode !== 'compare' && (
+                    <div style={{ display: 'flex', gap: 2, background: theme.muted, borderRadius: 8, padding: 3 }}>
+                      {['R', '%'].map(m => (
+                        <button key={m} onClick={() => setEquityDispMode(m)}
+                          style={{
+                            fontSize: 11, fontWeight: 700, padding: '4px 11px', borderRadius: 6, border: 'none', cursor: 'pointer', fontFamily: "'JetBrains Mono',monospace", transition: 'all .15s ease',
+                            background: equityDispMode === m ? theme.accent : 'transparent',
+                            color: equityDispMode === m ? (dark ? '#000' : '#fff') : theme.sub,
+                            boxShadow: equityDispMode === m ? `0 1px 6px ${theme.accent}50` : 'none',
+                          }}>
+                          {m}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                  <YrSelector />
+                </div>
               </div>
               {equityMode === 'compare' ? (
                 <>
@@ -1157,8 +1159,8 @@ export default function App() {
                       </div>
                     ))}
                   </div>
-                  <ResponsiveContainer width="100%" height={isMobile ? 240 : 380}>
-                    <LineChart data={compareData} margin={{ top: 8, right: 8, bottom: 28, left: 4 }}>
+                  <ResponsiveContainer width="100%" height={isMobile ? 200 : 380}>
+                    <LineChart data={compareData} margin={{ top: 8, right: 4, bottom: isMobile ? 4 : 28, left: isMobile ? -10 : 4 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke={dark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.06)'} vertical={false} />
                       <XAxis dataKey="trade" {...axisProps} label={{ value: 'Number of trades', position: 'insideBottom', offset: -12, fill: theme.accent, fontSize: 9, fontFamily: "'JetBrains Mono',monospace", letterSpacing: 1 }} tickFormatter={v => v === 0 ? '' : '#' + v} />
                       <YAxis {...axisProps} tickFormatter={v => (v >= 0 ? '+' : '') + v + 'R'} width={36} />
@@ -1168,8 +1170,8 @@ export default function App() {
                   </ResponsiveContainer>
                 </>
               ) : (
-                <ResponsiveContainer width="100%" height={isMobile ? 240 : 380}>
-                  <AreaChart data={eqData} margin={{ top: 8, right: 8, bottom: 28, left: 4 }}>
+                <ResponsiveContainer width="100%" height={isMobile ? 200 : 380}>
+                  <AreaChart data={eqData} margin={{ top: 8, right: 4, bottom: isMobile ? 4 : 28, left: isMobile ? -10 : 4 }}>
                     <defs>
                       <linearGradient id="rrGrad" x1="0" y1="0" x2="0" y2="1">
                         <stop offset="0%" stopColor={theme.accent} stopOpacity={dark ? 0.32 : 0.22} />
@@ -2021,10 +2023,8 @@ export default function App() {
           *{transition-duration:.01ms!important;}
         }
 
-        /* ── MOBILE KPI SCROLL ── */
-        .mob-kpi-row{display:flex;overflow-x:auto;gap:10px;padding:0 16px 8px;scrollbar-width:none;-webkit-overflow-scrolling:touch;}
-        .mob-kpi-row::-webkit-scrollbar{display:none;}
-        .mob-kpi-row .kpi-card{min-width:150px;max-width:165px;flex-shrink:0;}
+        /* ── MOBILE KPI ── */
+        /* 2-column grid handled via inline styles */
 
         /* ── MOBILE BOTTOM NAV ── */
         .mob-nav{position:fixed;bottom:0;left:0;right:0;z-index:50;display:flex;align-items:stretch;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);}
